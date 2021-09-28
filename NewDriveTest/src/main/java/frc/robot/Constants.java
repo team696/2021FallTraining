@@ -13,7 +13,7 @@ package frc.robot;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-
+    /** Organizes all the non-changing values we use in the code */
     public static final int leftFrontPort = 10;
     public static final int leftBackPort = 11;
     public static final int rightFrontPort = 12;

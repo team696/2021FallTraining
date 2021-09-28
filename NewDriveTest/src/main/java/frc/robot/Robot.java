@@ -16,14 +16,23 @@ import frc.robot.subsystems.DriveTrain;
  * project.
  */
 public class Robot extends TimedRobot {
+  /** You can leave this in if you want, it only changes anything if you are using the autonomous part of the code, 
+   * if you do remove it, just delete any errors it creates */
   private Command m_autonomousCommand;
+
+  /**Creates an object for our DriveTrain class so we can call things from the class
+   * make sure to include any variables needed for the parameters
+   */
   public static DriveTrain m_driveTrain = new DriveTrain(Constants.leftFrontPort, Constants.leftBackPort, Constants.rightFrontPort, Constants.rightBackPort);
+  /** Similar to the previous line, creates a RobotContainer object so we can call things from the robotcontainer class, 
+   * what you name this is up to you  */
   private RobotContainer m_robotContainer;
 
 
-
+  /** The values that we will use from the joystick */
   double xAxis;
   double yAxis;
+  /** Values that will go in the parameters that are needed for the RobotDrive method */
   double leftSpeed;
   double rightSpeed;
 
@@ -64,12 +73,7 @@ public class Robot extends TimedRobot {
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
-    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
-
-    // schedule the autonomous command (example)
-    if (m_autonomousCommand != null) {
-      m_autonomousCommand.schedule();
-    }
+  
   }
 
   /** This function is called periodically during autonomous. */
@@ -90,11 +94,15 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
+    /** Defining the XAxis and yAxis objects as the x and y values from our joysticks on the controller */
     xAxis =   -m_robotContainer.xboxController.getRawAxis(1);
     yAxis = m_robotContainer.xboxController.getRawAxis(4);
+    /** The math required to make the robot turn left and right properly according to the joystick configuration. */
     leftSpeed =   yAxis + xAxis;
     rightSpeed = yAxis - xAxis;
-    
+    /** Calling back the robotDrive method from the DriveTrain class so that it runs fifty times a second
+     * uses the parameters leftSpeed and rightSpeed that we just defined
+     */
     m_driveTrain.robotDrive(leftSpeed, rightSpeed);
 
   }
