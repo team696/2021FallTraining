@@ -1,20 +1,12 @@
 plugins {
     id "java"
     id "edu.wpi.first.GradleRIO" version "2021.3.1"
-    id "maven"
-}
-
-apply plugin: 'checkstyle'
-
-checkstyle {
-    toolVersion "8.11"
-    configFile rootProject.file('config/checkstyle/checkstyle.xml')
 }
 
 sourceCompatibility = JavaVersion.VERSION_11
 targetCompatibility = JavaVersion.VERSION_11
 
-def ROBOT_MAIN_CLASS = "org.team696.robot.Main"
+def ROBOT_MAIN_CLASS = "frc.robot.Main"
 
 // Define my targets (RoboRIO) and artifacts (deployable files)
 // This is added by GradleRIO's backing project EmbeddedTools.
@@ -62,26 +54,20 @@ dependencies {
 
     testImplementation 'junit:junit:4.12'
 
-    implementation 'org.team696:TCA9548ADriver:0.3'
-    implementation 'org.team696:TCS34725Driver:0.4'
-    implementation 'org.team696:ColorUtils:0.2'
-
-
-    compile 'org.apache.logging.log4j:log4j-core:2.13.0'
-    
-    compile'org.apache.logging.log4j:log4j-core:2.13.0'
-    compile 'org.team696:MathUtils:0.3'
     // Enable simulation gui support. Must check the box in vscode to enable support
     // upon debugging
     simulation wpi.deps.sim.gui(wpi.platforms.desktop, false)
-     simulation wpi.deps.sim.driverstation(wpi.platforms.desktop, false)
+    simulation wpi.deps.sim.driverstation(wpi.platforms.desktop, false)
+
+    // Websocket extensions require additional configuration.
+    // simulation wpi.deps.sim.ws_server(wpi.platforms.desktop, false)
+    // simulation wpi.deps.sim.ws_client(wpi.platforms.desktop, false)
 }
 
-repositories {
-    maven{
-      url "http://artifactory.696private.org/team696-libs-release-local"
-    }
-    //mavenLocal()
+// Simulation configuration (e.g. environment variables).
+sim {
+    // Sets the websocket client remote host.
+    // envVar "HALSIMWS_HOST", "10.0.0.2"
 }
 
 // Setting up my Jar File. In this case, adding all libraries into the main jar ('fat jar')
@@ -90,16 +76,4 @@ repositories {
 jar {
     from { configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
     manifest edu.wpi.first.gradlerio.GradleRIOPlugin.javaManifest(ROBOT_MAIN_CLASS)
-}
-
-tasks.withType(Checkstyle) {
- ignoreFailures = true
- exclude '**/com/**'
- exclude '**/frc/team696/autonomousCommands/**'
- reports {
-    html.enabled = true
-    html.destination rootProject.file("build/reports/checkstyle.html")
-    xml.enabled = true
-    xml.destination rootProject.file("build/reports/checkstyle-result.xml")
- }
 }
