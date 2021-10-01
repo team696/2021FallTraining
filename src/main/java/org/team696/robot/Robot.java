@@ -8,6 +8,7 @@
 package org.team696.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -71,6 +72,8 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("Spindexer Current", m_robotContainer.spindexer.getCurrent());
     SmartDashboard.putNumber("Hood Angle", m_robotContainer.shooterHood.servoAngle());
     SmartDashboard.putNumber("Accelerator Velocity", m_robotContainer.shooter.getAcceleratorVelocity());
+    SmartDashboard.putNumber("Right Joystick", m_robotContainer.driverController.getX(Hand.kRight));
+    SmartDashboard.putNumber("Left Joystick", m_robotContainer.driverController.getY(Hand.kLeft));
 
 
     // SmartDashboard.putNumber("spin pos", m_robotContainer.spindexer.getEncoderPosition());
