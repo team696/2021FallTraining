@@ -15,6 +15,7 @@ import org.team696.robot.Constants;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Intake extends SubsystemBase {
+
   /**
    * Creates a new IntakeSubsystem.
    */

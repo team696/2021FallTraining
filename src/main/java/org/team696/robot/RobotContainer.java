@@ -22,20 +22,21 @@ import org.team696.MathUtils.MathUtils;
 import org.team696.robot.Constants.IntakeConstants;
 import org.team696.robot.Constants.OperatorConstants;
 import org.team696.robot.Constants.SpindexerConstants;
-import org.team696.robot.commands.ATCForCommand;
-import org.team696.robot.commands.ATCRevCommand;
+// import org.team696.robot.commands.ATCForCommand;
+// import org.team696.robot.commands.ATCRevCommand;
 import org.team696.robot.commands.AutoIndexKickUp;
 import org.team696.robot.commands.Drive;
 import org.team696.robot.commands.DriveTimer;
 import org.team696.robot.commands.FireCommand;
 import org.team696.robot.commands.IntakeTimerCommand;
+import org.team696.robot.commands.OmniKickDown;
 import org.team696.robot.commands.OmniKickUp;
 import org.team696.robot.commands.OmniKickUpTimer;
 import org.team696.robot.commands.ShooterCommand;
 import org.team696.robot.commands.ShooterHoodCommand;
 import org.team696.robot.commands.ShooterPowerCommand;
 import org.team696.robot.commands.ShooterPrep;
-import org.team696.robot.commands.SpinToPocket;
+// import org.team696.robot.commands.SpinToPocket;
 import org.team696.robot.commands.SpindexerLoading;
 import org.team696.robot.commands.TurretLockOn;
 import org.team696.robot.commands.TurretManual;
@@ -159,20 +160,21 @@ public class RobotContainer {
     fireButton.whenPressed(new FireCommand(shooter, spindexer, SpindexerConstants.KickMotorSpeed));
     fireButton.whenReleased(new FireCommand(shooter, spindexer, SpindexerConstants.stopDrumPower));
 
-    OmniKickUp reverseOmni = new OmniKickUp(spindexer, SpindexerConstants.KickMotorReverseSpeed);
-    omniReverse.whenPressed(reverseOmni);
-    omniReverse.whenReleased(new OmniKickUp(spindexer, SpindexerConstants.stopDrumPower));
+    // OmniKickUp reverseOmni = new OmniKickUp(spindexer, SpindexerConstants.KickMotorReverseSpeed);
+    // OmniKickDown reverseOmni = new OmniKickDown(spindexer, -0.1, shooter, -0.5);
+    omniReverse.whenPressed(new OmniKickDown(spindexer, -0.1, shooter, -0.5));
+    omniReverse.whenReleased(new OmniKickDown(spindexer, 0.0, shooter, 0.0));
 
-    ATCForCommand ATCfor = new ATCForCommand(spindexer);
-    ATCRevCommand ATCrev = new ATCRevCommand(spindexer);
+    // ATCForCommand ATCfor = new ATCForCommand(spindexer);
+    // ATCRevCommand ATCrev = new ATCRevCommand(spindexer);
 
-    ATCForButton.whenPressed(ATCfor);
-    ATCForButton.cancelWhenPressed(ATCrev);
+    // ATCForButton.whenPressed(ATCfor);
+    // ATCForButton.cancelWhenPressed(ATCrev);
 
-    ATCRevButton.whenPressed(ATCrev);
-    ATCRevButton.cancelWhenPressed(ATCfor);
+    // ATCRevButton.whenPressed(ATCrev);
+    // ATCRevButton.cancelWhenPressed(ATCfor);
 
-    intakeOnButton.whenReleased(ATCfor);
+    // intakeOnButton.whenReleased(ATCfor);
 
   }
 
@@ -191,14 +193,14 @@ public class RobotContainer {
             new ShooterCommand(shooter, 3900, true),
 
             new SequentialCommandGroup(
-                  new ShooterHoodCommand(shooterHood, 51), 
+                  // new ShooterHoodCommand(shooterHood, 51), 
                           // new IntakeTimerCommand(intake, 50);
-                new SpinToPocket(spindexer, 1),
-                  new OmniKickUpTimer(spindexer, true, 25), 
-                new SpinToPocket(spindexer, 2),
-                  new OmniKickUpTimer(spindexer, true, 25), 
-                new SpinToPocket(spindexer, 3),
-                  new OmniKickUpTimer(spindexer, true, 25)
+                // new SpinToPocket(spindexer, 1),
+                //   new OmniKickUpTimer(spindexer, true, 25), 
+                // new SpinToPocket(spindexer, 2),
+                //   new OmniKickUpTimer(spindexer, true, 25), 
+                // new SpinToPocket(spindexer, 3),
+                //   new OmniKickUpTimer(spindexer, true, 25)
               )
           ),
 
