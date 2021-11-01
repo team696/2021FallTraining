@@ -32,22 +32,24 @@ public class FireCommand extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    spindexer.kickMotor.setInverted(false);
+    spindexer.kickupIsOn = true;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if(shooter.isUpToSpeed()){
+    // if(shooter.isUpToSpeed()){
       // shooter.setAcceleratorPower(true);
       spindexer.setKickMotor(power);
       // spindexer.spindexerLoadingAntiJam(0.5, 20);
     
 
-    }
-    else{
-      spindexer.setKickMotor(0);
+    // // }
+    // else{
+    //   spindexer.setKickMotor(0);
 
-    }
+    // }
     
   }
   
@@ -55,6 +57,8 @@ public class FireCommand extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    spindexer.setKickMotor(0);
+    spindexer.kickupIsOn = false;
   }
 
   // Returns true when the command should end.

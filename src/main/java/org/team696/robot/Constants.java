@@ -57,8 +57,8 @@ public final class Constants {
     public static final double KickMotorSpeed = 1.;
     public static final double KickMotorReverseSpeed = -0.1;
 
-    public static final double loadingDrumPower = 0.22;
-    public static final double continuousShootDrumPower = 0.55;
+    public static final double loadingDrumPower = 0.22 ;
+    public static final double continuousShootDrumPower = 0.8;
     public static final double stopDrumPower = 0;
 
     public static final double timeBetweenIndex = 1;

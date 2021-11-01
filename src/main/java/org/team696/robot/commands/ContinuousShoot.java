@@ -30,7 +30,7 @@ public class ContinuousShoot extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    timer = 0;
+    // timer = 0;/
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -41,15 +41,20 @@ public class ContinuousShoot extends CommandBase {
     spindexer.spindexerLoadingAntiJam(drumSpeed);
 
     }
-    spindexer.setKickMotor(1);
+    while(spindexer.kickupIsOn ==  true){
+      spindexer.kickMotor.setInverted(true);
+      spindexer.setKickMotor(.05);
+    }
+    // spindexer.setKickMotor(1);
 
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    spindexer.kickMotor.setInverted(false);
     spindexer.setKickMotor(0);
-    timer = 0;
+    // timer = 0;
 
   }
 

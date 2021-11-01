@@ -33,13 +33,15 @@ public class Spindexer extends SubsystemBase {
   private static final Logger logger = LogManager.getLogger(Spindexer.class);
 
   private boolean isMoving;
-  private int targetPocket = 1;
-  private boolean isOnTarget;
+  // private int targetPocket = 1;
+  // private boolean isOnTarget;
   private static Boolean isJammed = false;
-  private boolean[] ballOccupancy = new boolean[SpindexerConstants.nPockets];
+  // private boolean[] ballOccupancy = new boolean[SpindexerConstants.nPockets];
 
   private int forwardTimer;
   private int backTimer;
+
+  public boolean kickupIsOn;
 
   public enum SpindexerLoadingStates {
     FORWARD_TIMER, FORWARD_OK, BACK_TIMER, BACK_OK
@@ -56,14 +58,14 @@ public class Spindexer extends SubsystemBase {
   private final DutyCycle encoder = new DutyCycle(encoderDI);
 
   // Ball color sensors
-  TCA9548A mux = new TCA9548A(Port.kOnboard, SpindexerConstants.ColorSensorsMuxAddress);
-  private final BallSensors sensors = new BallSensors(mux,
-      new byte[] { SpindexerConstants.ColorSensor1MuxChannel, SpindexerConstants.ColorSensor2MuxChannel,
-          SpindexerConstants.ColorSensor3MuxChannel, SpindexerConstants.ColorSensor4MuxChannel,
-          SpindexerConstants.ColorSensor5MuxChannel });
+  // TCA9548A mux = new TCA9548A(Port.kOnboard, SpindexerConstants.ColorSensorsMuxAddress);
+  // private final BallSensors sensors = new BallSensors(mux,
+  //     new byte[] { SpindexerConstants.ColorSensor1MuxChannel, SpindexerConstants.ColorSensor2MuxChannel,
+  //         SpindexerConstants.ColorSensor3MuxChannel, SpindexerConstants.ColorSensor4MuxChannel,
+  //         SpindexerConstants.ColorSensor5MuxChannel });
 
   // Kick motor
-  private final CANSparkMax kickMotor = new CANSparkMax(SpindexerConstants.KickMotorCANID, MotorType.kBrushless);
+  public final CANSparkMax kickMotor = new CANSparkMax(SpindexerConstants.KickMotorCANID, MotorType.kBrushless);
 
   public Spindexer() {
     spindexerMotor.restoreFactoryDefaults();
@@ -71,21 +73,21 @@ public class Spindexer extends SubsystemBase {
     spindexerMotor.setClosedLoopRampRate(SpindexerConstants.closedLoopRampRate);
     spindexerMotor.setOpenLoopRampRate(SpindexerConstants.openLoopRampRate);
     motorPID.setP(SpindexerConstants.P);
-    sensors.initSensors();
+    // sensors.initSensors();
     kickMotor.setIdleMode(IdleMode.kBrake);
   }
 
-  public int getTargetPocket() {
-    return targetPocket;
-  }
+  // public int getTargetPocket() {
+  //   return targetPocket;
+  // }
 
   public boolean isMoving() {
     return isMoving;
   }
 
-  public boolean isOnTarget() {
-    return isOnTarget;
-  }
+  // public boolean isOnTarget() {
+  //   return isOnTarget;
+  // }
 
   /**
    * Sets brake mode of spindexer motor.
@@ -103,16 +105,16 @@ public class Spindexer extends SubsystemBase {
    * Safely sets target pocket.
    * 
    * @param pocket Intended target pocket (bounds-checked)
-   */
-  public void setTargetPocket(int pocket) {
-    if (1 <= pocket && pocket <= SpindexerConstants.nPockets) {
-      // logger.info(String.format("Setting spindexer target to pocket %d.", pocket));
-      targetPocket = pocket;
-    }
-    else{
-      // logger.error(String.format("Received request to set spindexer target to pocket %d. Ignoring.", pocket));
-    }
-  }
+  //  */
+  // public void setTargetPocket(int pocket) {
+  //   if (1 <= pocket && pocket <= SpindexerConstants.nPockets) {
+  //     // logger.info(String.format("Setting spindexer target to pocket %d.", pocket));
+  //     targetPocket = pocket;
+  //   }
+  //   else{
+  //     // logger.error(String.format("Received request to set spindexer target to pocket %d. Ignoring.", pocket));
+  //   }
+  // }
 
   public double getMotorPosition() {
     return motorEncoder.getPosition();
@@ -129,9 +131,9 @@ public class Spindexer extends SubsystemBase {
   /**Gets ball occupancy array.
    * @return Which pockets have balls
    */
-  public boolean[] getBallOccupancy() {
-    return ballOccupancy;
-  }
+  // public boolean[] getBallOccupancy() {
+  //   return ballOccupancy;
+  // }
 
   @Override
   public void periodic() {
@@ -147,48 +149,48 @@ public class Spindexer extends SubsystemBase {
     isMoving = (motorEncoder.getVelocity() > SpindexerConstants.VelocityTolerance);
 
     // Check if on target
-    if ((Math.abs(SpindexerConstants.PocketPositions[targetPocket - 1]
-        - getEncoderPosition()) < SpindexerConstants.PositionTolerance) && !isMoving) {
-      isOnTarget = true;
-      // updateBallOccupancy();
-    } else {
-      isOnTarget = false;
+    // if ((Math.abs(SpindexerConstants.PocketPositions[targetPocket - 1]
+    //     - getEncoderPosition()) < SpindexerConstants.PositionTolerance) && !isMoving) {
+    //   isOnTarget = true;
+    //   // updateBallOccupancy();
+    // } else {
+    //   isOnTarget = false;
 
-      if(isJammed){
-        // logger.warn(String.format("Jam while advancing to pocket %d. Reverting to previous pocket."));
-        if (getVelocity() > 0) {
-          if (targetPocket == 1) {
-            setTargetPocket(5);
-          } else {
-            setTargetPocket(targetPocket - 1);
-          }
-        } else {
-          if (targetPocket == 5) {
-            setTargetPocket(1);
-          } else {
-            setTargetPocket(targetPocket + 1);
-          }
-        }
-      }
+    //   if(isJammed){
+    //     // logger.warn(String.format("Jam while advancing to pocket %d. Reverting to previous pocket."));
+    //     if (getVelocity() > 0) {
+    //       if (targetPocket == 1) {
+    //         setTargetPocket(5);
+    //       } else {
+    //         setTargetPocket(targetPocket - 1);
+    //       }
+    //     } else {
+    //       if (targetPocket == 5) {
+    //         setTargetPocket(1);
+    //       } else {
+    //         setTargetPocket(targetPocket + 1);
+    //       }
+    //     // }
+    //   }
 
-      motorPID.setReference(getMotorPositionForPocket(targetPocket), ControlType.kPosition);
+    //   motorPID.setReference(getMotorPositionForPocket(targetPocket), ControlType.kPosition);
 
-    }
+    // }
   }
 
   /**
    * Gets the currently-indexed pocket.
    * 
    * @return Current pocket (1-5), or 0 if not on a pocket
-   */
-  public int getCurrentPocket() {
-    if (isOnTarget) {
-      return targetPocket;
-    } else {
-      // TODO: Need a better way to represent "not at a pocket"
-      return 0;
-    }
-  }
+  //  */
+  // public int getCurrentPocket() {
+  //   if (isOnTarget) {
+  //     return targetPocket;
+  //   } else {
+  //     // TODO: Need a better way to represent "not at a pocket"
+  //     return 0;
+  //   }
+  // }
 
   /**
    * Gets the position of the spindexer, based on the absolute encoder.
@@ -212,18 +214,18 @@ public class Spindexer extends SubsystemBase {
    * @param pocket The index of the pocket to go to (1, ..., 5)
    * @return The required motor position, taking the current motor position into
    *         account
-   */
-  @SuppressWarnings("checkstyle:magicnumber")
-  private double getMotorPositionForPocket(int pocket) {
-    double currentPos = getEncoderPosition();
-    double targetPos = SpindexerConstants.PocketPositions[pocket - 1];
-    double toGo = computeWrappedDistance(currentPos, targetPos);
-    if ((0.5 - Math.abs(toGo)) < 0.1) {
-      toGo = Math.abs(toGo);
-    }
-    // System.out.printf("toGo: %f\n", toGo);
-    return getMotorPosition() + (toGo * SpindexerConstants.MotorTurnsPerSpindexerTurn);
-  }
+  //  */
+  // @SuppressWarnings("checkstyle:magicnumber")
+  // private double getMotorPositionForPocket(int pocket) {
+  //   double currentPos = getEncoderPosition();
+  //   double targetPos = SpindexerConstants.PocketPositions[pocket - 1];
+  //   double toGo = computeWrappedDistance(currentPos, targetPos);
+  //   if ((0.5 - Math.abs(toGo)) < 0.1) {
+  //     toGo = Math.abs(toGo);
+  //   }
+  //   // System.out.printf("toGo: %f\n", toGo);
+  //   return getMotorPosition() + (toGo * SpindexerConstants.MotorTurnsPerSpindexerTurn);
+  // }
 
   /**
    * Helper function to compute shortest wrapped angular distance.
@@ -232,31 +234,31 @@ public class Spindexer extends SubsystemBase {
    * @param to   To point, on (0, 1)
    * @return Shortest distance, on (-0.5, 0.5)
    */
-  @SuppressWarnings("checkstyle:magicnumber")
-  private double computeWrappedDistance(double from, double to) {
-    // Adapted from https://stackoverflow.com/a/28037434
-    double diff = (to - from + 0.5) % 1 - 0.5;
-    return diff < -0.5 ? diff + 1 : diff;
-  }
+  // @SuppressWarnings("checkstyle:magicnumber")
+  // private double computeWrappedDistance(double from, double to) {
+  //   // Adapted from https://stackoverflow.com/a/28037434
+  //   double diff = (to - from + 0.5) % 1 - 0.5;
+  //   return diff < -0.5 ? diff + 1 : diff;
+  // }
 
   /**
    * Finds the pocket closest to the current position.
    * @return Index of closest pocket, in the range (1, SpindexerConstants.nPockets)
    */
-  public int findNearestPocket(){
-    double currentPos = getEncoderPosition();
-    int i; 
-    int nearest=0; 
-    double nearestDistance = 1;
-    for(i=0; i<SpindexerConstants.nPockets; i++){
-      double distance = Math.abs(computeWrappedDistance(currentPos, SpindexerConstants.PocketPositions[i]));
-      if(distance < nearestDistance){
-        nearestDistance = distance;
-        nearest = i+1;
-      }
-    }
-    return nearest;
-  }
+  // public int findNearestPocket(){
+  //   double currentPos = getEncoderPosition();
+  //   int i; 
+  //   int nearest=0; 
+  //   double nearestDistance = 1;
+  //   for(i=0; i<SpindexerConstants.nPockets; i++){
+  //     double distance = Math.abs(computeWrappedDistance(currentPos, SpindexerConstants.PocketPositions[i]));
+  //     if(distance < nearestDistance){
+  //       nearestDistance = distance;
+  //       nearest = i+1;
+  //     }
+  //   }
+  //   return nearest;
+  // }
 
   /**
    * Updates the ballOccupancy array using sensor data. Uses the current position
@@ -264,57 +266,57 @@ public class Spindexer extends SubsystemBase {
    * 
    * @return None
    */
-  private void updateBallOccupancy() {
-    int offset = getCurrentPocket() - 1;
-    boolean[] sensorReadings = sensors.getResults();
-    int i;
-    for (i = 0; i < SpindexerConstants.nPockets; i++) {
-      ballOccupancy[(i + offset) % (SpindexerConstants.nPockets + 1)] = sensorReadings[i];
-    }
-  }
+  // private void updateBallOccupancy() {
+  //   int offset = getCurrentPocket() - 1;
+  //   boolean[] sensorReadings = sensors.getResults();
+  //   int i;
+  //   for (i = 0; i < SpindexerConstants.nPockets; i++) {
+  //     ballOccupancy[(i + offset) % (SpindexerConstants.nPockets + 1)] = sensorReadings[i];
+  //   }
+  // }
 
   /**
    * Finds the filled pocket closest to the current pocket.
    * 
    * @return The closest filled pocket, or 0 if no pockets are filled.
    */
-  public int findNextFilledPocket() {
-    int current = getCurrentPocket();
-    int toCheckA;
-    int toCheckB;
-    int i;
+  // public int findNextFilledPocket() {
+  //   int current = getCurrentPocket();
+  //   int toCheckA;
+  //   int toCheckB;
+  //   int i;
 
-    // Check adjacent
-    for (i = 0; i < (SpindexerConstants.nPockets / 2); i++) {
-      toCheckA = (current + i) % (SpindexerConstants.nPockets);
-      toCheckB = (current - i) < 1 ? (current - i) + SpindexerConstants.nPockets : (current - i);
+  //   // Check adjacent
+  //   for (i = 0; i < (SpindexerConstants.nPockets / 2); i++) {
+  //     toCheckA = (current + i) % (SpindexerConstants.nPockets);
+  //     toCheckB = (current - i) < 1 ? (current - i) + SpindexerConstants.nPockets : (current - i);
 
-      if (ballOccupancy[toCheckA]) {
-        return toCheckA;
-      }
-      if (ballOccupancy[toCheckB]) {
-        return toCheckB;
-      }
-    }
+  //     if (ballOccupancy[toCheckA]) {
+  //       return toCheckA;
+  //     }
+  //     if (ballOccupancy[toCheckB]) {
+  //       return toCheckB;
+  //     }
+  //   }
 
-    // TODO: need better way to indicate no occupied pockets
-    return 0;
-  }
+  //   // TODO: need better way to indicate no occupied pockets
+  //   return 0;
+  // }
 
   /**
    * Counts the total number of filled pockets.
    * 
    * @return Number of filled pockets
    */
-  public int getNumberOfFilledPockets() {
-    int result = 0;
-    for (Boolean p : ballOccupancy) {
-      if (p) {
-        result++;
-      }
-    }
-    return result;
-  }
+  // public int getNumberOfFilledPockets() {
+  //   int result = 0;
+  //   for (Boolean p : ballOccupancy) {
+  //     if (p) {
+  //       result++;
+  //     }
+  //   }
+  //   return result;
+  // }
 
   /**
    * Turns kick motor on or off.
@@ -385,7 +387,7 @@ public class Spindexer extends SubsystemBase {
 
   }
 
-  public void goToNotAPocket() {
-    motorPID.setReference(0.867, ControlType.kPosition);
-  }
+  // public void goToNotAPocket() {
+  //   motorPID.setReference(0.867, ControlType.kPosition);
+  // }
 }
