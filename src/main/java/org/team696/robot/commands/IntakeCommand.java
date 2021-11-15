@@ -9,6 +9,7 @@ package org.team696.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
+import org.team696.robot.Constants.IntakeConstants;
 import org.team696.robot.subsystems.Intake;
 
 public class IntakeCommand extends CommandBase {
@@ -18,12 +19,10 @@ public class IntakeCommand extends CommandBase {
    */
   private Intake intake;
 
-  private double intakePower;
-  public IntakeCommand(Intake intake, double intakePower) {
+  public IntakeCommand(Intake intake) {
     // Use addRequirements() here to declare subsystem dependencies.
 
     this.intake = intake;
-    this.intakePower = intakePower;
     addRequirements(intake);
   }
 
@@ -35,7 +34,9 @@ public class IntakeCommand extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    intake.runIntake(intakePower);
+    intake.runIntake(IntakeConstants.rollerVelocity);
+    intake.moveIntake(IntakeConstants.intakeDownPosition);
+    intake.MoveRightIntake(IntakeConstants.intakeDownPosition);
     // spindexer.spindexerLoadingAntiJam(power, current);
     // System.out.println("loading");
   }
@@ -43,6 +44,7 @@ public class IntakeCommand extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    intake.runIntake(0);
   }
 
   // Returns true when the command should end.

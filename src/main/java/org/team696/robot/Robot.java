@@ -56,6 +56,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
+    
     // Runs the Scheduler.  This is responsible for polling buttons, adding newly-scheduled
     // commands, running already-scheduled commands, removing finished or interrupted commands,
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
@@ -74,6 +75,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("Accelerator Velocity", m_robotContainer.shooter.getAcceleratorVelocity());
     SmartDashboard.putNumber("Right Joystick", m_robotContainer.driverController.getX(Hand.kRight));
     SmartDashboard.putNumber("Left Joystick", m_robotContainer.driverController.getY(Hand.kLeft));
+    SmartDashboard.putNumber("Servo Angle ", m_robotContainer.climberServos.getServoAngle());
 
 
     // SmartDashboard.putNumber("spin pos", m_robotContainer.spindexer.getEncoderPosition());
@@ -135,6 +137,8 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
+    m_robotContainer.intake.leftIntDepMotor.getEncoder().setPosition(0);
+    m_robotContainer.intake.rightIntDepMotor.getEncoder().setPosition(0);
     logger.info("Transitioning to teleop.");
     m_robotContainer.spindexer.setBrake(true);
     // SmartDashboard.putNumber("Target RPM", 3900);
@@ -149,42 +153,30 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopPeriodic() {
-        if(RobotContainer.operatorPanel.getRawButton(OperatorConstants.hoodAutoButton)){
-          //Previous comp: m_robotContainer.shooterHood.moveServoAngle(51);
-          m_robotContainer.shooterHood.moveServoAngle(51);
+        // if(RobotContainer.operatorPanel.getRawButton(OperatorConstants.hoodAutoButton)){
+        //   m_robotContainer.shooterHood.moveServoAngle(51);
 
           
 
-        }
-        else{
-          double hood_axis = -Math.round(m_robotContainer.operatorPanel.getRawAxis(1)*128*1.5);
-          if (last_hood_axis == -69.23){
-            last_hood_axis = hood_axis;
-          }
-          double delta = hood_axis - last_hood_axis;
+        // }
+        // else{
+        //   double hood_axis = -Math.round(m_robotContainer.operatorPanel.getRawAxis(1)*128*1.5);
+        //   if (last_hood_axis == -69.23){
+        //     last_hood_axis = hood_axis;
+        //   }
+        //   double delta = hood_axis - last_hood_axis;
         
-          SmartDashboard.putNumber("Hood Axis", Math.round(m_robotContainer.operatorPanel.getRawAxis(1)*128));
+        //   SmartDashboard.putNumber("Hood Axis", Math.round(m_robotContainer.operatorPanel.getRawAxis(1)*128));
 
-          if (delta + m_robotContainer.shooterHood.servoAngle() <= 51 && delta + m_robotContainer.shooterHood.servoAngle() >= 10){
-            m_robotContainer.shooterHood.moveServoAngle(m_robotContainer.shooterHood.servoAngle()+delta);
+        //   if (delta + m_robotContainer.shooterHood.servoAngle() <= 51 && delta + m_robotContainer.shooterHood.servoAngle() >= 10){
+        //     m_robotContainer.shooterHood.moveServoAngle(m_robotContainer.shooterHood.servoAngle()+delta);
           
-            /*
-            if (m_robotContainer.shooterHood.servoAngle() >= 51 && delta < 0){
-              m_robotContainer.shooterHood.moveServoAngle(m_robotContainer.shooterHood.servoAngle()+delta);
-            }
-            else if (m_robotContainer.shooterHood.servoAngle() <= 10 && delta > 0){
-              m_robotContainer.shooterHood.moveServoAngle(m_robotContainer.shooterHood.servoAngle()+delta);
-            }
-
-            if (m_robotContainer.shooterHood.servoAngle() < 51 && m_robotContainer.shooterHood.servoAngle() > 10){
-              m_robotContainer.shooterHood.moveServoAngle(m_robotContainer.shooterHood.servoAngle()+delta);
-            }
-            */
-          }
-          last_hood_axis = hood_axis;
+           
+        //   }
+        //   last_hood_axis = hood_axis;
 
 
-        }
+        // }
       // }
         
 

@@ -58,7 +58,7 @@ public final class Constants {
     public static final double KickMotorReverseSpeed = -0.1;
 
     public static final double loadingDrumPower = 0.22 ;
-    public static final double continuousShootDrumPower = 0.8;
+    public static final double continuousShootDrumPower = 0.7;
     public static final double stopDrumPower = 0;
 
     public static final double timeBetweenIndex = 1;
@@ -167,6 +167,8 @@ public final class Constants {
     public static final int climberDownButton = 17;
     public static final int colorWheelRotationControl = 18;
     public static final int driveAssistButton = 19;
+    public static final int intakeDownButton = 6;
+    public static final int intakeUpButton = 5;
 
     public static final int shooterManualAxis = 3;
     public static final int turretManualAxis = 2;
@@ -218,12 +220,60 @@ public final class Constants {
     public static final int slowTasksSpeed = 50;
   }
 
-  public static final class IntakeConstants {
-    public static final int IntakeMotorPort = 50;
+  public static final class IntakeConstants { 
+    public static final double leftIntkP = 0.08;
+    public static final double leftIntkI = 0;
+    public static final double leftIntkD = 1;
+    public static final double leftIntIZone = 0;
+    public static final double leftIntFF = 0;
+    public static final double leftIntMin = -0.5;
+    public static final double leftIntMax = 0.5;
+
+    public static final double rightIntkP = 0.08;
+    public static final double rightIntkI = 0;
+    public static final double rightIntkD = 1;
+    public static final double rightIntIZone = 0;
+    public static final double rightIntFF = 0;
+    public static final double rightIntMin = -0.5;
+    public static final double rightIntMax = 0.5;
+
+    public static final int intakeTimeout = 30;
+    public static final int rollerPIDSlot = 1;
+    public static final double rollerkF = 0.06;
+    public static final double rollerkP = 0.6;
+    public static final double rollerkI = 0.0;
+    public static final double rollerkD = 0.0;
+
+    public static final double intakeDownPosition = 23;
+    public static final double intakeUpPosition = 2;
+    public static final double intakeMidPosition = 13;
+
+    public static final double rollerVelocity = 0.3;
+
+    public static final int leftIntakeMotorPort =  50;
+
+    public static final int rightIntakeMotorPort = 30;
     public static final boolean IntakeInverted = false;
 
-    public static final double intakePower = 0.7;
+    public static final double intakePower = 0.3;
     public static final double outtakePower = -1;
     public static final double stopIntakePower = 0;
+  }
+  public static final class ClimberConstants{
+
+    public static final int climberPIDSlot = 3;
+    public static final int climberTimeout = 30;
+    public static final double climberkF = 0;
+    public static final double climberkP = 0.1;
+    public static final double climberkI = 0;
+    public static final double climberkD = 1.0;
+    public static final double climberPos = 20;
+    public static final double climberServoUnlock = 105;
+    public static final double climberServoLock = 1;
+
+    
+
+
+
   }
 }

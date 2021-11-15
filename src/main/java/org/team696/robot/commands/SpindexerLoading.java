@@ -8,6 +8,7 @@
 package org.team696.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Constants;
 
 import org.team696.robot.subsystems.Intake;
 import org.team696.robot.subsystems.Spindexer;
@@ -20,12 +21,14 @@ public class SpindexerLoading extends CommandBase {
   Intake intake;
   double spindexerPower;
   double intakePower;
-  public SpindexerLoading(Spindexer spindexer, Intake intake, double spindexerPower, double intakePower) {
+  double position;
+  public SpindexerLoading(Spindexer spindexer, Intake intake, double spindexerPower, double intakePower, double position) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.spindexerPower = spindexerPower;
     this.intakePower = intakePower;
     this.spindexer = spindexer;
     this.intake = intake;
+    this.position = position;
     addRequirements(spindexer);
     addRequirements(intake);
   }
@@ -40,6 +43,9 @@ public class SpindexerLoading extends CommandBase {
   public void execute() {
     spindexer.spindexerLoadingAntiJam(spindexerPower);
       intake.runIntake(intakePower);
+      intake.moveIntake(position);
+      intake.MoveRightIntake(position);
+      
     // System.out.println("running the loading stuff");
   }
 

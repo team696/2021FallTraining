@@ -48,6 +48,7 @@ public class ShooterHood extends SubsystemBase {
    */
   public double servoAngle(){
     return leftShooterHoodServo.getAngle();
+    // return leftShooterHoodServo.getPosition();
   }
 
   

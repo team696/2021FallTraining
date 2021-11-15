@@ -1,54 +1,31 @@
-/*----------------------------------------------------------------------------*/
-/* Copyright (c) 2019 FIRST. All Rights Reserved.                             */
-/* Open Source Software - may be modified and shared by FRC teams. The code   */
-/* must be accompanied by the FIRST BSD license file in the root directory of */
-/* the project.                                                               */
-/*----------------------------------------------------------------------------*/
+// Copyright (c) FIRST and other WPILib contributors.
+// Open Source Software; you can modify and/or share it under the terms of
+// the WPILib BSD license file in the root directory of this project.
 
-// package org.team696.robot.subsystems;
+package org.team696.robot.subsystems;
 
-// import edu.wpi.first.wpilibj.Servo;
-// import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj.Servo;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-// import org.team696.robot.Constants;
-// import org.team696.robot.Constants.ClimberConstants;
+public class ClimberServos extends SubsystemBase {
+  private Servo climbServo;
+  /** Creates a new ClimberServos. */
+  public ClimberServos() {
+    climbServo = new Servo(4);
+  }
 
-// public class ClimberServos extends SubsystemBase {
-//   private Servo leftClimberServo;
-//   private Servo rightClimberServo;
+  public void UnlockClimber(double angle){
+    climbServo.setAngle(angle);
+    // climbServo.setPosition(0.5 );   
+  }
 
-//   /**
-//    * Constructor for ServoSubsystem, defines servos
-//    */
-//   public ClimberServos() {
-//     leftClimberServo = new Servo(ClimberConstants.leftClimberServoPort);
-//     rightClimberServo = new Servo(ClimberConstants.rightClimberServoPort);
+  public double getServoAngle(){
+    return climbServo.getAngle();
+  }
 
-//   }
-
-//   /**
-//    * Opens the servos to allow the climber to move down and lift the robot up
-//    */
-//   public void openServo(){
-//     leftClimberServo.set(ClimberConstants.leftServoOpen);
-//     rightClimberServo.set(ClimberConstants.rightServoOpen);
-//   }
-
-
-//   public void closeServo(){
-//     leftClimberServo.set(ClimberConstants.leftServoClosed);
-//     rightClimberServo.set(ClimberConstants.rightServoClosed);
-//   }
-
-//   public void moveClimberServos(double angle){
-//     // leftClimberServo.setAngle(angle);
-//     rightClimberServo.setAngle(angle);
-//     System.out.println("running servo to "+angle);
-
-//   }
-
-//   @Override
-//   public void periodic() {
-//     // This method will be called once per scheduler run
-//   }
-// }
+  @Override
+  public void periodic() {
+    // climbServo.setAngle(degrees);
+    // This method will be called once per scheduler run
+  }
+}

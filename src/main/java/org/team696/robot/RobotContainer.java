@@ -15,20 +15,28 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
+import javax.swing.Action;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import org.team696.MathUtils.MathUtils;
+import org.team696.robot.Constants.ClimberConstants;
 import org.team696.robot.Constants.IntakeConstants;
 import org.team696.robot.Constants.OperatorConstants;
 import org.team696.robot.Constants.SpindexerConstants;
 // import org.team696.robot.commands.ATCForCommand;
 // import org.team696.robot.commands.ATCRevCommand;
 import org.team696.robot.commands.AutoIndexKickUp;
+import org.team696.robot.commands.ClimberPullCommand;
 import org.team696.robot.commands.Drive;
 import org.team696.robot.commands.DriveTimer;
 import org.team696.robot.commands.FireCommand;
+import org.team696.robot.commands.FullShoot;
+import org.team696.robot.commands.IntakeCommand;
+import org.team696.robot.commands.IntakeDownCommand;
 import org.team696.robot.commands.IntakeTimerCommand;
+import org.team696.robot.commands.IntakeUpCommand;
 import org.team696.robot.commands.OmniKickDown;
 import org.team696.robot.commands.OmniKickUp;
 import org.team696.robot.commands.OmniKickUpTimer;
@@ -40,6 +48,9 @@ import org.team696.robot.commands.ShooterPrep;
 import org.team696.robot.commands.SpindexerLoading;
 import org.team696.robot.commands.TurretLockOn;
 import org.team696.robot.commands.TurretManual;
+import org.team696.robot.commands.UnlockClimber;
+import org.team696.robot.subsystems.Climber;
+import org.team696.robot.subsystems.ClimberServos;
 import org.team696.robot.subsystems.Drivetrain;
 import org.team696.robot.subsystems.Intake;
 import org.team696.robot.subsystems.Limelight;
@@ -65,7 +76,10 @@ public class RobotContainer {
   public final TurretSubsystem turretSubsystem = new TurretSubsystem();
   public static final Limelight limelight = new Limelight();
   public final Intake intake = new Intake();
+  public final ClimberServos climberServos = new ClimberServos();
+  public final Climber climber = new Climber();
 
+  
   // Joysticks
   public final XboxController driverController = new XboxController(OperatorConstants.driverJoystickPort);
   public static final Joystick operatorPanel = new Joystick(OperatorConstants.operatorPanelPort);
@@ -96,6 +110,13 @@ public class RobotContainer {
   private final JoystickButton automaticShootPrep = new JoystickButton(operatorPanel, OperatorConstants.driveAssistButton);
   private final JoystickButton automaticIndex =  new JoystickButton(operatorPanel, OperatorConstants.colorWheelPositionControl);
 
+  private final JoystickButton intakeDownButton = new JoystickButton(operatorPanel, OperatorConstants.intakeDownButton);
+  private final JoystickButton intakeUpButton = new JoystickButton(operatorPanel, OperatorConstants.intakeUpButton);
+
+  private final JoystickButton driverIntakeButton = new JoystickButton(driverController, 2);
+
+
+
   public double getDriveSpeed() {
     // Math to correct for nonlinearities in the controller should happen here.
     double jsVal = -driverController.getY(Hand.kLeft);
@@ -121,9 +142,13 @@ public class RobotContainer {
   }
 
   public RobotContainer() {
+
+
     Command driveCommand = new Drive(() -> getDriveSpeed(), () -> getDriveTurn(), drivetrain);
     drivetrain.setDefaultCommand(driveCommand);
     configureButtonBindings();
+
+    climberServos.setDefaultCommand(new UnlockClimber(climberServos, ClimberConstants.climberServoLock));
   }
 
   /**
@@ -131,27 +156,34 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
     // rpm is 3900
-    spinUpButton.whenPressed(new ShooterCommand(shooter, shooter.shootRPM, true));
-    spinUpButton.whenReleased(new ShooterPowerCommand(shooter, 0, false));
+    spinUpButton.whenPressed(new ShooterCommand(shooter, shooter.shootRPM, true, intake, IntakeConstants.intakeMidPosition, shooterHood, 46));
+    spinUpButton.whenReleased(new ShooterPowerCommand(shooter, 0, false, intake, IntakeConstants.intakeUpPosition, shooterHood, -5));
+
+    // spinUpButton.whenPressed(new FullShoot(turretSubsystem, shooter, intake, shooterHood, limelight));
+    // spinUpButton.whenReleased(new ShooterPowerCommand(shooter, 0, false, intake, IntakeConstants.intakeUpPosition));
+
 
     turretAutoButton.whileHeld(new TurretLockOn(turretSubsystem, limelight));
     turretAutoButton.whenReleased(new TurretManual(turretSubsystem, limelight));
 
-    SpindexerLoading loadingOff = new SpindexerLoading(spindexer, intake, SpindexerConstants.stopDrumPower, IntakeConstants.stopIntakePower);
-    intakeOnButton.whileHeld(
-        new SpindexerLoading(spindexer, intake, SpindexerConstants.loadingDrumPower, IntakeConstants.intakePower));
-    intakeOnButton.whenReleased(loadingOff);
-    intakeOffButton.whileHeld(
-        new SpindexerLoading(spindexer, intake, SpindexerConstants.stopDrumPower, IntakeConstants.outtakePower));
-    intakeOffButton.whenReleased(loadingOff);
+    SpindexerLoading loadingOff = new SpindexerLoading(spindexer, intake, SpindexerConstants.stopDrumPower, IntakeConstants.stopIntakePower, IntakeConstants.intakeUpPosition);
+    // intakeOnButton.whileHeld(
+    //     new SpindexerLoading(spindexer, intake, SpindexerConstants.loadingDrumPower, IntakeConstants.intakePower, IntakeConstants.intakeDownPosition));
+    // intakeOnButton.whenReleased(loadingOff);
+
+    driverIntakeButton.whileHeld(new SpindexerLoading(spindexer, intake, SpindexerConstants.loadingDrumPower, IntakeConstants.intakePower, IntakeConstants.intakeDownPosition));
+    driverIntakeButton.whenReleased(loadingOff);
+    // intakeOffButton.whileHeld(
+    //     new SpindexerLoading(spindexer, intake, SpindexerConstants.stopDrumPower, IntakeConstants.outtakePower));
+    // intakeOffButton.whenReleased(loadingOff);
 
     // maybe have this button cancel the human player loading sequence
     continuousButton.whileHeld(new SpindexerLoading(spindexer, intake, SpindexerConstants.continuousShootDrumPower,
-        IntakeConstants.stopIntakePower));
+        IntakeConstants.stopIntakePower, IntakeConstants.intakeMidPosition));
     continuousButton.whenReleased(loadingOff);
 
     automaticShootPrep.whenPressed(new ShooterPrep(shooter, turretSubsystem));
-    automaticShootPrep.whenReleased(new ShooterPowerCommand(shooter, 0, false));
+    automaticShootPrep.whenReleased(new ShooterPowerCommand(shooter, 0, false, intake, IntakeConstants.intakeUpPosition, shooterHood, -5));
     automaticShootPrep.whenReleased(new TurretManual(turretSubsystem, limelight));
 
     automaticIndex.whenPressed(new AutoIndexKickUp(spindexer, intake, SpindexerConstants.continuousShootDrumPower, 0));
@@ -164,6 +196,28 @@ public class RobotContainer {
     // OmniKickDown reverseOmni = new OmniKickDown(spindexer, -0.1, shooter, -0.5);
     omniReverse.whenPressed(new OmniKickDown(spindexer, -0.1, shooter, -0.5));
     omniReverse.whenReleased(new OmniKickDown(spindexer, 0.0, shooter, 0.0));
+
+    // ATCForButton.toggleWhenPressed(new UnlockClimber(climberServos, ClimberConstants.climberServoUnlock));
+    ATCForButton.whileHeld(new UnlockClimber(climberServos, ClimberConstants.climberServoUnlock));
+    ATCForButton.whenReleased(new UnlockClimber(climberServos, ClimberConstants.climberServoLock));
+    // ATCForButton.whenInactive(command)
+
+
+    ATCRevButton.whileHeld(new ClimberPullCommand(climber, 0.5));
+    ATCRevButton.whenReleased(new ClimberPullCommand(climber, 0));
+    
+    hoodAutoButton.whileHeld(new ShooterHoodCommand(shooterHood, 46 ));
+    hoodAutoButton.whenReleased(new ShooterHoodCommand(shooterHood, -5));
+
+    // intakeDownButton.whenPressed(new IntakeDownCommand(intake));
+    // intakeUpButton.whenInactive(new IntakeUpCommand(intake, IntakeConstants.intakeMidPosition));
+    // intakeDownButton.whenInactive(new IntakeUpCommand(intake, IntakeConstants.intakeMidPosition));
+    // intakeUpButton.whenPressed(new IntakeUpCommand(intake, IntakeConstants.intakeUpPosition));
+// spinUpButton.whenReleased(new IntakeUpCommand(intake, IntakeConstants.intakeMidPosition));
+// intakeOnButton.whenReleased(new IntakeUpCommand(intake, IntakeConstants.intakeMidPosition));
+// intakeOnButton.whenInactive(new IntakeUpCommand(intake, IntakeConstants.intakeUpPosition));
+
+    // intakeOnButton.whenPressed(new IntakeCommand(intake));
 
     // ATCForCommand ATCfor = new ATCForCommand(spindexer);
     // ATCRevCommand ATCrev = new ATCRevCommand(spindexer);
@@ -186,36 +240,40 @@ public class RobotContainer {
   @SuppressWarnings("checkstyle:magicnumber")
   public Command getAutonomousCommand() {
 
-    return new SequentialCommandGroup(
+   return  new IntakeUpCommand(intake, IntakeConstants.intakeUpPosition).withTimeout(1).andThen(new DriveTimer(drivetrain, 0.25, 0, 50000).withTimeout(2.5));
+  // }
+    // return new SequentialCommandGroup(
 
-        new ParallelCommandGroup(
-            new TurretLockOn(turretSubsystem, limelight),
-            new ShooterCommand(shooter, 3900, true),
+        // new ParallelCommandGroup(
+        //     // new TurretLockOn(turretSubsystem, limelight),
+        //     // new ShooterCommand(shooter, 3900, true, intake, IntakeConstants.intakeMidPosition),
 
-            new SequentialCommandGroup(
-                  // new ShooterHoodCommand(shooterHood, 51), 
-                          // new IntakeTimerCommand(intake, 50);
-                // new SpinToPocket(spindexer, 1),
-                //   new OmniKickUpTimer(spindexer, true, 25), 
-                // new SpinToPocket(spindexer, 2),
-                //   new OmniKickUpTimer(spindexer, true, 25), 
-                // new SpinToPocket(spindexer, 3),
-                //   new OmniKickUpTimer(spindexer, true, 25)
-              )
-          ),
+        //     // new SequentialCommandGroup(
+        //           // new ShooterHoodCommand(shooterHood, 51), 
+        //                   // new IntakeTimerCommand(intake, 50);
+        //         // new SpinToPocket(spindexer, 1),
+        //         //   new OmniKickUpTimer(spindexer, true, 25), 
+        //         // new SpinToPocket(spindexer, 2),
+        //         //   new OmniKickUpTimer(spindexer, true, 25), 
+        //         // new SpinToPocket(spindexer, 3),
+        //         //   new OmniKickUpTimer(spindexer, true, 25)
+        //       )
+          // ),
 
-        new DriveTimer(drivetrain, -0.5, 0, 50), 
-        new DriveTimer(drivetrain, 0, 0.7, 40),
-        new DriveTimer(drivetrain, 0.5, 0, 25),
-        new ParallelCommandGroup(
-          new DriveTimer(drivetrain, 0.5, 0, 35), 
-          new IntakeTimerCommand(intake, 35)
-          )
+        // new DriveTimer(drivetrain, -0.5, 0, 50), 
+        // new DriveTimer(drivetrain, 0, 0.7, 40),
+        // new DriveTimer(drivetrain, 0.5, 0, 25),
+        // new ParallelCommandGroup(
+        //   new DriveTimer(drivetrain, 0.5, 0, 35), 
+        //   new IntakeTimerCommand(intake, 35)
+        // )
+
+          
         
-
-    );
-
   }
+    // );
+
+  
 
   public boolean getDriveMode() {
     return driveMode.get();
